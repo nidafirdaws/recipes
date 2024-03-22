@@ -38,21 +38,21 @@ We noticed that recipes taking more than five hours are less than 5% of the data
 <iframe
   src="assets/recipes-hours.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 In addition, we plotted the distribution of `n_steps` to investigate how many steps recipes posted on food.com tend to have. We observed that this graph has a right skew, with most recipes having between 10-15 steps on average.
 <iframe
   src="assets/steps-distribution.html"
   width="800"
-  height="700"
+  height="400"
   frameborder="0"
 ></iframe>
 We also investigate the relationship between categories of `rating` and the time it takes to cook a recipe (`minutes`). We observed that the Interquartile Range for each rating category is roughly the same. We can also observe that 4 and 5 star rating recipes have the most number of `minutes` outliers.
 <iframe
   src="assets/cooking-time-by-rating.html"
   width="800"
-  height="700"
+  height="600"
   frameborder="0"
 ></iframe>
 

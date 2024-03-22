@@ -41,19 +41,14 @@ We noticed that recipes taking more than five hours are less than 5% of the data
   height="600"
   frameborder="0"
 ></iframe>
-
 In addition, we plotted the distribution of `n_steps` to investigate how many steps recipes posted on food.com tend to have. We observed that this graph has a right skew, with most recipes having between 10-15 steps on average.
-
 <iframe
   src="assets/steps-distribution.html"
   width="800"
   height="700"
   frameborder="0"
 ></iframe>
-
 We also investigate the relationship between categories of `rating` and the time it takes to cook a recipe (`minutes`). We observed that the Interquartile Range for each rating category is roughly the same. We can also observe that 4 and 5 star rating recipes have the most number of `minutes` outliers.
-
-
 <iframe
   src="assets/cooking-time-by-rating.html"
   width="800"
@@ -63,15 +58,12 @@ We also investigate the relationship between categories of `rating` and the time
 
 
 We plotted the distribution of the number of steps across different groups of minutes, observing that the IQR for quick, medium, and long recipes tends to increase as the number of steps increases. This was particularly interesting to us as we thought it implied that recipes that take longer intuitively have more steps to follow. This realization is what barred us from using `minutes` as a feature in our model's prediction problem, since we would not necessarily have access to a variable that can directly be associated with more steps in a recipe. 
-
 <iframe
   src="assets/distribution_of_steps_across_minute_groups.html"
   width="800"
   height="700"
   frameborder="0"
 ></iframe>
-
-
 We aggregated by `rating` for each recipe and created a table showing the counts of each 
 rating category for each recipe. In randomly sampling from this table, we observe that most recipes tend to be concentrated in either 4 or 5 stars, with few having at least 1 rating in every category. We infer this may be due to the fact that users feeling strongly about a recipe tend to feel reviews, while fewer users will take the time to leave a rating if they feel the recipe is subpar.
 
@@ -105,15 +97,12 @@ We conduct a permutation test to check whether the missingness of `rating` is de
 **H<sub>a</sub>** : There is a relationship between the missingness of `rating` and the `minutes` column. The difference in means of `minutes` between recipes that have missing `rating` and recipes that do not is not due to random chance alone. 
 
 The p-value of the missigness of rating by minutes is 0.115. At an alpha level of 0.05, we fail to reject the null. The columns `rating` and `minutes` are independent of eaach other. 
-
-
 <iframe
   src="assets/minutes_missing.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
-
 We see in the above graph the distributions of `minutes` when rating is missing vs. when `rating` is not missing. Both distribution are quite similar, which falls in line with our conclusion that whether or not `rating` is missing does not have a significantly clear relationship with `minutes`. This makes sense since these two variables seem quite unrelated with respect to a user leaving a `rating` or not. We can see that the distributions have a similar right skew and visibly overlapping center.
 
 ### Permutation test for missingness of `rating` vs `n_steps`
@@ -125,15 +114,12 @@ We then investigate the relationship between the missingness of `rating` and `n_
 **H<sub>a</sub>** : There is a relationship between the missingness of `rating` and the `n_steps` column. The difference in means of `n_steps` between recipes that have missing `rating` and recipes that do not is not due to random chance alone. 
 
 Our resulting p-value after performing a permutation test is 0.0. Therefore, at an alpha of 0.05, we reject the null hypothesis and conclude that the missingness of `rating` is dependent on `n_steps`.
-
-
 <iframe
   src="assets/n-steps-missing.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
-
 In the graph above, we observe that the distribution of `n_steps` for `rating` when it is missing is quite similar to the distribution for when it is not missing. However, when `rating` is missing, we can see that the blue line (non-missing) differs from the orange line (missing), meaning there is still some differences between both distributions. This difference, as shown above, has a relationship to missingness of `rating`. We infer this is due to the fact that recipes with missing ratings might have had too many steps to follow, leading users to review them differently than for a different number of steps.
 
 ## Hypothesis Testing
@@ -161,14 +147,12 @@ We opted to use the coefficient of determination (R-squared) and the root mean s
 To begin, since we recognize that rows with missing ratings constitute only 6% of the dataset, we opt to drop these rows to preserve data integrity.
 
 In the design of our baseline model features, we observed the pairwise correlation coefficients between all quantitative columns of our dataframe `data`. We naively observe that our target variable, `n_steps` has the highest correlation coefficients with `n_ingredients`, `calories (#)`, and `total fat (PDV)`. We also presume that there is some relationship between `n_steps` and `minutes` despite the correlation coefficient of 0.01, because we can infer that recipes that take longer (larger # of `minutes`) must take longer due to a combination of a large `n_steps` and other factors. In fact, we can see this relationship in our bivariate analysis above, in the figure `Distribution of Number of Steps Across Minute Groups`, where the third quartile of each minute group increases as we enter a bigger minute category.
-
 <iframe
   src="assets/correlation_matrix_heatmap.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
-
 In this graph we can see the numerical values of coefficients of determination between all quantitative column. There are quite a few high correlations between nutritional values, and `n_steps` has our selected features as its highest correlations as well.
 
 We also observed the variances across different quantitative columns that we want to use, seeing that `calories (#)`, `sugar (PDV)`, and so on are highly varied. The variances for these values is more than 10000 units each. We want to use `calories (#)` and `total fat (PDV)` as features because they have higher correlations with `n_steps`, but their high variances and very large convinced us to utilize `QuantileTransformer` on them both. This would ensure that our model remained robust to outliers and still preserve the distances between datapoints. We also selected `n_ingredients` as a feature because we saw that it had a fairly strong linear relationship with `n_steps` and also a low variance. 
@@ -186,22 +170,17 @@ Overall, our baseline model provides a foundation for understanding the relation
 In our final model, we introduced the feature `protein (PDV)` based on its correlation with the variable `n_ingredients`, the most correlated variable to `n_steps`, and its correlation to `n_steps` itself. This addition is grounded in the understanding that protein-rich ingredients like meat may necessitate specific preparation techniques or additional steps, thus influencing recipe complexity. By incorporating `protein (PDV)`, we aimed to capture this nuanced relationship and enhance the predictive capability of our model regarding recipe complexity.
 
 We added two new transformed features and changed our model selection. We decided to add a boolean feature which shows whether the tags for a recipe contain the tag `easy` because we observed below that those recipes tend to have a higher number of steps on average. We also added `sugar (PDV` as a feature because we knew from our prior analysis that `sugar (PDV)` and `n_steps` have a higher correlation compared to other nutritional values. `sugar (PDV)` is also highly correlated with `calories (#)` at a correlation coefficient of   `sugar (PDV)` has an extremely high variance with quite a few outliers (we observed this after plotting the distributions of `sugar (PDV`. We wanted to preserve the relative distances between each datapoint and also make it robust to the outliers without having to outright remove them, so we used `QuantileTransformer` to transform `sugar (PDV)`.
-
-
 <iframe
   src="assets/kde_plots.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
-
 As seen in this graph, the distributions of `n_steps` for recipes without the `easy` tag and recipes with the `easy` tag has a significant difference. We can see that the recipes without the `easy` tag tend to have more steps on average. We can infer this is because users are less likely to tag recipes with a high number of steps as `easy`, since those recipes should require less effort.
 
 Secondly, we changed our model selection to `DecisionTreeRegressor` because we believed that there are a lot of nonlinear relationships between `n_steps` and the multicollinearity of other features in the dataset. `DecisionTreeRegressor` works well with data that contains many outliers, and we believe that the specificity of data on recipes published on a food website can only increase as more and more recipes are added, so we need a model that can appropriately make decisions on where the data is similar and where it is not. `DecisionTreeRegressor` also makes decisions based on feature importance and the interactions between features themselves, which is something we wanted because we know that many of these features have linear relationships with each other, like the nutritional values. 
 
 We aimed to tune the hyperparameter `max_depth` because we wanted to prevent overfitting with a `DecisionTreeRegressor` that creates too many splits on very specific sections of our features. The `max_depth` parameter limits the depth of the `DecisionTreeRegressor` during training, so that it can decide how much to grow the tree while splitting into sections of features that are related to each other. We run a simple loop checking to see what values of `max_depth` optimally plateaus with respect to our RMSE and r^2 value. We utilized a simple loop to achieve this and then plotted the changes of RMSE and r^2 as the max_depth increased, as seen below: 
-
-
 <iframe
   src="assets/max_depth_vs_R2_plot.html"
   width="800"
@@ -215,7 +194,6 @@ We aimed to tune the hyperparameter `max_depth` because we wanted to prevent ove
   height="600"
   frameborder="0"
 ></iframe>
-
 As seen above, `max_depth` is optimally 30, since the RMSE and r^2 values plateau at this point and do not increase by a significant amount. We therefore take max_depth = 30 as our lower bound for the `DecisionTreeRegressor` in our model. 
 
 After running our model with this new hyperparameter and transformed features, we observed our r^2 value for the test set jumped to 63% and our RMSE value decreased to 3.84 units. We believe this is a big improvement from our baseline model, which was relying on simple linear relationships to make predictions on `n_steps`. We wanted to use `max_features` as a hyperparameter as well, but ultimately decided against it because we observed that this was overfitting for our model, and it did not make sense to limit our `DecisionTreeRegressor` to a certain number of features when we were already operating on a small subset of the available features in our dataset. The lower RMSE certainly means that our final model performed better because the distance between the actual target variables and response variables was minimized.

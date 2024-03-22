@@ -1,1 +1,3 @@
 theme: minima
+additional_css:
+  - "assets/css/custom.css"

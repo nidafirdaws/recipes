@@ -39,7 +39,7 @@ We noticed that recipes taking more than five hours are less than 5% of the data
   frameborder="0"
 ></iframe>
 
-We plotted the distribution of `n_ingredients` to investigate how many ingredients recipes posted on food.com tend to have compared to different cooking times. This distribution seems fairly normal with a slight right skew, and we observe that on average recipes have 5-10 ingredients. Recipes that take longer also seem to have a larger third quartile for number of steps, in ascending order. 
+We plotted the distribution of `n_steps` to investigate how many ingredients recipes posted on food.com tend to have compared to different cooking times. This distribution seems fairly normal with a slight right skew, and we observe that on average recipes have 5-10 ingredients. Recipes that take longer also seem to have a larger third quartile for number of steps, in ascending order. 
 
 <iframe
   src="assets/steps-distribution.html"
@@ -99,7 +99,7 @@ Our resulting p-value after performing a permutation test using difference in me
 
 We see in the above graph the distributions of `minutes` when rating is missing vs. when `rating` is not missing. Both distribution are quite similar, which falls in line with our conclusion that whether or not `rating` is missing does not have a significantly clear relationship with `minutes`.
 
-Upon our results for this first experiment, we perform the same experiment using `rating` and all remaining columns in `recipe`, like the following.
+Upon our results for this first experiment, we perform the same experiment using `rating` and `n_steps` in `recipe`, like the following.
 
 ***Permutation test for missingness of `rating` vs `n_steps`***
 
@@ -118,7 +118,7 @@ Our resulting p-value after performing a permutation test using difference in me
   frameborder="0"
 ></iframe>
 
-In the graph above, we observe that the distribution of `n_steps` for `rating` when it is missing is quite similar to the distribution for when it is not missing. However, when `rating` is missing, we can see that the blue line (non-missing) differs from the orange line (missing), meaning there is still some differences between both distributions. This difference, as shown above, has a relationship to missingness of `rating`.
+In the graph above, we observe that the distribution of `n_steps` for `rating` when it is missing is quite similar to the distribution for when it is not missing. However, when `rating` is missing, we can see that the orange line (non-missing) differs from the blue line (missing), meaning there is still some differences between both distributions. This difference, as shown above, has a relationship to missingness of `rating`.
 
 ## Hypothesis Testing
 
@@ -169,7 +169,7 @@ In this graph we can see the numerical values of coefficients of determination b
 
 We also observed the variances across different quantitative columns that we are interested in using, seeing that `calories (#)`, `sugar (PDV)`, and so on are highly varied. The variances for these values is more than 10000 units each. We want to use `calories (#)` and `total fat (PDV)` as features for their correlations with `n_steps`, so we choose to use `QuantileTransformer` to handle the largly varying scales of these features. This ensures that our features are uniformly distributed, which helps mitigate the impact of outliers and enhances the performance of our model. We also selected `n_ingredients`, as a feature because we observed a fairly strong linear relationship with `n_steps`.
 
-Thus we have chosen our features to be `n_ingredients`, quantile transformed `calories (#)`, and quantile transformed `total_fat (PDV)`. We chose a `LinearRegression` model to be fit on our features because we so far we only know there is a significant coefficient of determination between these variables and the response variable `n_steps`. Since we recognize that rows with missing ratings constitute only 6% of the dataset, we opt to drop these rows to preserve data integrity for linear regression.
+Thus, we have chosen our features to be `n_ingredients`, quantile transformed `calories (#)`, and quantile transformed `total_fat (PDV)`. We chose a `LinearRegression` model to be fit on our features because we so far we only know there is a significant coefficient of determination between these variables and the response variable `n_steps`. Since we recognize that rows with missing ratings constitute only 6% of the dataset, we opt to drop these rows to preserve data integrity for linear regression.
 
 We split our dataset into training and testing sets using a 75-25 split ratio to ensure robust evaluation of our model's performance. The model pipeline consists of two main components: the preprocessing stage, encapsulated within a ColumnTransformer, and the linear regression model for prediction.
 
@@ -199,10 +199,10 @@ As seen in this graph, the distributions of `n_steps` for recipes without the `e
 
 Moreover, we changed our model selection to `DecisionTreeRegressor` because we believed most relationships in our features have with `n_steps` are nonlinear. `DecisionTreeRegressor` is robust against the outliers in our quantitative features and will more effectively handle the non-linear relationships within our data. `DecisionTreeRegressor` also makes decisions based on feature importance and the interactions between features themselves, which allows us to beenift form the linear relationships within features, like those of nutritional values. 
 
-We tuned the hyperparameter `max_depth` because we wanted to prevent overfitting. We ran a simulation to check for optimal values of `max_depth` with respect to our RMSE and r^2 value. We utilized a simple loop to achieve this and then plotted the changes of RMSE and r^2 as the max_depth increased.
+We tuned the hyperparameter `max_depth` because we wanted to prevent overfitting. We additionally tried to test using the hyperparameter `max_features`, which tells the `DecisionTreeRegressor` how many features to use at a specific split, but we are not working with a large number of features, so we decided against it. We ran a simulation to check for optimal values of `max_depth` with respect to our RMSE and r^2 value. We utilized a simple loop to achieve this and then plotted the changes of RMSE and r^2 as the max_depth increased.
 
 <iframe
-  src="assets/max_depth_vs_R2_plot.html"
+  src="assets/max_depth_vs_R2_plot_correct.html"
   width="800"
   height="400"
   frameborder="0"
@@ -210,7 +210,7 @@ We tuned the hyperparameter `max_depth` because we wanted to prevent overfitting
 
 
 <iframe
-  src="assets/max_depth_vs_RMSE_plot.html"
+  src="assets/max_depth_vs_RMSE_plot_correct.html"
   width="800"
   height="400"
   frameborder="0"
@@ -230,7 +230,7 @@ Moreover, the substantially lower RMSE underscores the model's improved ability 
 
 While there is still room for improvement, particularly in reducing the RMSE further, achieving an RMSE that is significantly smaller than the standard deviation of the target variable suggests that our model is indeed performing well in capturing the underlying patterns and variability in the data related to recipe complexity.
 
-Overall, our final model represents a significant advancement, incorporating relevant features and leveraging an appropriate algorithm with tuned hyperparameters to provide more accurate predictions of recipe complexity. The inclusion of 'protein (PDV)' and fine-tuning of model parameters contribute to this enhanced performance, offering valuable insights into the intricate dynamics of recipe preparation.
+Overall, our final model represents a significant advancement, incorporating relevant features and leveraging an appropriate algorithm with tuned hyperparameters to provide more accurate predictions of recipe complexity. The inclusion of 'protein (PDV)' and fine-tuning of model parameters contribute to this enhanced performance, offering valuable insights into the intricate dynamics of recipe preparation. We accept that recipe complexity can be highly varied, and with further analysis into food.com and its user demographics, we could further improve the model.
 
 ## Fairness Analysis
 

@@ -52,7 +52,7 @@ We also investigate the relationship between categories of `rating` and the time
 <iframe
   src="assets/cooking-time-by-rating.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 
@@ -61,7 +61,7 @@ We plotted the distribution of the number of steps across different groups of mi
 <iframe
   src="assets/distribution_of_steps_across_minute_groups.html"
   width="800"
-  height="700"
+  height="400"
   frameborder="0"
 ></iframe>
 We aggregated by `rating` for each recipe and created a table showing the counts of each 
@@ -100,7 +100,7 @@ The p-value of the missigness of rating by minutes is 0.115. At an alpha level o
 <iframe
   src="assets/minutes_missing.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 We see in the above graph the distributions of `minutes` when rating is missing vs. when `rating` is not missing. Both distribution are quite similar, which falls in line with our conclusion that whether or not `rating` is missing does not have a significantly clear relationship with `minutes`. This makes sense since these two variables seem quite unrelated with respect to a user leaving a `rating` or not. We can see that the distributions have a similar right skew and visibly overlapping center.
@@ -117,7 +117,7 @@ Our resulting p-value after performing a permutation test is 0.0. Therefore, at 
 <iframe
   src="assets/n-steps-missing.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 In the graph above, we observe that the distribution of `n_steps` for `rating` when it is missing is quite similar to the distribution for when it is not missing. However, when `rating` is missing, we can see that the blue line (non-missing) differs from the orange line (missing), meaning there is still some differences between both distributions. This difference, as shown above, has a relationship to missingness of `rating`. We infer this is due to the fact that recipes with missing ratings might have had too many steps to follow, leading users to review them differently than for a different number of steps.
@@ -150,7 +150,7 @@ In the design of our baseline model features, we observed the pairwise correlati
 <iframe
   src="assets/correlation_matrix_heatmap.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 In this graph we can see the numerical values of coefficients of determination between all quantitative column. There are quite a few high correlations between nutritional values, and `n_steps` has our selected features as its highest correlations as well.
@@ -173,7 +173,7 @@ We added two new transformed features and changed our model selection. We decide
 <iframe
   src="assets/kde_plots.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 As seen in this graph, the distributions of `n_steps` for recipes without the `easy` tag and recipes with the `easy` tag has a significant difference. We can see that the recipes without the `easy` tag tend to have more steps on average. We can infer this is because users are less likely to tag recipes with a high number of steps as `easy`, since those recipes should require less effort.
@@ -184,14 +184,14 @@ We aimed to tune the hyperparameter `max_depth` because we wanted to prevent ove
 <iframe
   src="assets/max_depth_vs_R2_plot.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 
 <iframe
   src="assets/max_depth_vs_RMSE_plot.html"
   width="800"
-  height="600"
+  height="400"
   frameborder="0"
 ></iframe>
 As seen above, `max_depth` is optimally 30, since the RMSE and r^2 values plateau at this point and do not increase by a significant amount. We therefore take max_depth = 30 as our lower bound for the `DecisionTreeRegressor` in our model. 
